@@ -18,4 +18,4 @@ For full documentation visit [mkdocs.org](https://www.mkdocs.org).
 
 ## Docs
 
-::: ukp_project_template
+::: naacl2025_token_weighting

@@ -1,4 +1,4 @@
-"""Entry point for ukp_project_template."""
+"""Entry point for naacl2025_token_weighting."""
 
 from .cli import main  # pragma: no cover
 

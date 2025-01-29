@@ -1,4 +1,4 @@
-"""CLI interface for ukp_project_template project.
+"""CLI interface for naacl2025_token_weighting project.
 
 Be creative! do whatever you want!
 
@@ -13,7 +13,7 @@ from .subpackage import SubPackageClass
 def main():  # pragma: no cover
     """
     The main function executes on commands:
-    `python -m ukp_project_template` and `$ ukp_project_template `.
+    `python -m naacl2025_token_weighting` and `$ naacl2025_token_weighting `.
 
     This is your program's entry point.
 
