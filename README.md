@@ -1,8 +1,16 @@
-## Token Weighting for Long-Range Language Modeling
 
-### NAACL 2025 Findings
+<p  align="center">
+  <img src='logo.png' width='1000'>
+</p>
 
-This repository provides the code for our paper. To get started, clone the repo and run 
+# Token Weighting for Long-Range Language Modeling
+[![Arxiv](https://img.shields.io/badge/Arxiv-2502.NNNNN-red?style=flat-square&logo=arxiv&logoColor=white)](https://put-here-your-paper.com)
+[![License](https://img.shields.io/github/license/UKPLab/naacl2025-token-weighting)](https://opensource.org/licenses/Apache-2.0)
+[![Python Versions](https://img.shields.io/badge/Python-3.10-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+
+This repository provides the code for our paper "Token Weighting for Long-Range Language Modeling", accepted to NAACL 2025 Findings.
+
+To get started, clone the repo and run 
 
 ```
 pip install -r requirements.txt
