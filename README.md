@@ -1,115 +1,107 @@
-<p  align="center">
-  <img src='logo.png' width='200'>
-</p>
+## Token Weighting for Long-Range Language Modeling
 
-# naacl2025_token_weighting
-[![Arxiv](https://img.shields.io/badge/Arxiv-YYMM.NNNNN-red?style=flat-square&logo=arxiv&logoColor=white)](https://put-here-your-paper.com)
-[![License](https://img.shields.io/github/license/UKPLab/naacl2025-token-weighting)](https://opensource.org/licenses/Apache-2.0)
-[![Python Versions](https://img.shields.io/badge/Python-3.9-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-[![CI](https://github.com/UKPLab/naacl2025-token-weighting/actions/workflows/main.yml/badge.svg)](https://github.com/UKPLab/naacl2025-token-weighting/actions/workflows/main.yml)
+### NAACL 2025 Findings
 
-This is the official template for new Python projects at UKP Lab. It was adapted for the needs of UKP Lab from the excellent [python-project-template](https://github.com/rochacbruno/python-project-template/) by [rochacbruno](https://github.com/rochacbruno).
-
-It should help you start your project and give you continuous status updates on the development through [GitHub Actions](https://docs.github.com/en/actions).
-
-> **Abstract:** The study of natural language processing (NLP) has gained increasing importance in recent years, with applications ranging from machine translation to sentiment analysis. Properly managing Python projects in this domain is of paramount importance to ensure reproducibility and facilitate collaboration. The template provides a structured starting point for projects and offers continuous status updates on development through GitHub Actions. Key features include a basic setup.py file for installation, packaging, and distribution, documentation structure using mkdocs, testing structure using pytest, code linting with pylint, and entry points for executing the program with basic CLI argument parsing. Additionally, the template incorporates continuous integration using GitHub Actions with jobs to check, lint, and test the project, ensuring robustness and reliability throughout the development process.
-
-Contact person: [Federico Tiblias](mailto:federico.tiblias@tu-darmstadt.de) 
-
-[UKP Lab](https://www.ukp.tu-darmstadt.de/) | [TU Darmstadt](https://www.tu-darmstadt.de/
-)
-
-Don't hesitate to send us an e-mail or report an issue, if something is broken (and it shouldn't be) or if you have further questions.
-
-
-## Getting Started
-
-> **DO NOT CLONE OR FORK**
-
-If you want to set up this template:
-
-1. Request a repository on UKP Lab's GitHub by following the standard procedure on the wiki. It will install the template directly. Alternatively, set it up in your personal GitHub account by clicking **[Use this template](https://github.com/rochacbruno/python-project-template/generate)**.
-2. Wait until the first run of CI finishes. Github Actions will commit to your new repo with a "✅ Ready to clone and code" message.
-3. Delete optional files: 
-    - If you don't need automatic documentation generation, you can delete folder `docs`, file `.github\workflows\docs.yml` and `mkdocs.yml`
-    - If you don't want automatic testing, you can delete folder `tests` and file `.github\workflows\tests.yml`
-4. Prepare a virtual environment:
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install .
-pip install -r requirements-dev.txt # Only needed for development
-```
-5. Adapt anything else (for example this file) to your project. 
-
-6. Read the file [ABOUT_THIS_TEMPLATE.md](ABOUT_THIS_TEMPLATE.md)  for more information about development.
-
-## Usage
-
-### Using the classes
-
-To import classes/methods of `naacl2025_token_weighting` from inside the package itself you can use relative imports: 
-
-```py
-from .base import BaseClass # Notice how I omit the package name
-
-BaseClass().something()
-```
-
-To import classes/methods from outside the package (e.g. when you want to use the package in some other project) you can instead refer to the package name:
-
-```py
-from naacl2025_token_weighting import BaseClass # Notice how I omit the file name
-from naacl2025_token_weighting.subpackage import SubPackageClass # Here it's necessary because it's a subpackage
-
-BaseClass().something()
-SubPackageClass().something()
-```
-
-### Using scripts
-
-This is how you can use `naacl2025_token_weighting` from command line:
-
-```bash
-$ python -m naacl2025_token_weighting
-```
-
-### Expected results
-
-After running the experiments, you should expect the following results:
-
-(Feel free to describe your expected results here...)
-
-### Parameter description
-
-* `x, --xxxx`: This parameter does something nice
-
-* ...
-
-* `z, --zzzz`: This parameter does something even nicer
-
-## Development
-
-Read the FAQs in [ABOUT_THIS_TEMPLATE.md](ABOUT_THIS_TEMPLATE.md) to learn more about how this template works and where you should put your classes & methods. Make sure you've correctly installed `requirements-dev.txt` dependencies
-
-## Cite
-
-Please use the following citation:
+This repository provides the code for our paper. To get started, clone the repo and run 
 
 ```
-@InProceedings{smith:20xx:CONFERENCE_TITLE,
-  author    = {Smith, John},
-  title     = {My Paper Title},
-  booktitle = {Proceedings of the 20XX Conference on XXXX},
-  month     = mmm,
-  year      = {20xx},
-  address   = {Gotham City, USA},
-  publisher = {Association for XXX},
-  pages     = {XXXX--XXXX},
-  url       = {http://xxxx.xxx}
-}
+pip install -r requirements.txt
+```
+Additionally, make sure that `CUDA 11.7.` and `torch` are installed before installing flash attention
+```
+pip install flash_attn==2.7.3
 ```
 
-## Disclaimer
+If you want to preprocess (i.e. chunk into 32k sequences and save in tokenized form) the data, run
 
-> This repository contains experimental software and is published for the sole purpose of giving additional background details on the respective publication. 
+```
+import os
+from data_preprocessing import DataPreprocessor
+from logger_setup import initialize_logger
+from datasets import load_from_disk
+
+initialize_logger()
+
+tokenizer_name = "llama3"
+
+PATH_RAW_DATA = "/local/path/to/pg19"
+PATH_CHUNKED_DATA = os.path.join(PATH_RAW_DATA, f"preprocessed_{tokenizer_name}")
+
+data_preprocessor = DataPreprocessor(PATH_RAW_DATA=PATH_RAW_DATA, PATH_CHUNKED_DATA=PATH_CHUNKED_DATA,
+                                     tokenizer=tokenizer_name)
+dataset = data_preprocessor.fetch_data_from_file()
+
+data_preprocessor.save_locally_hf(dataset)
+``` 
+If `PATH_RAW_DATA` is empty or non-existent, it will be created and [PG19](https://huggingface.co/datasets/deepmind/pg19) will be downloaded into it.
+
+If you want to log your training runs with [aim](https://aimstack.readthedocs.io/en/latest/overview.html), run 
+
+```
+aim init
+```
+
+Then you can start the self-scoring training (i.e. the unfrozen variant) via
+
+```
+python main.py --out_path /directory/for/saved/runs
+```
+
+For the frozen variant, the sequences first have to be scored and saved: 
+
+```
+python main.py --run_name llama3_32k_dense_precompute_weights --launcher 'accelerate launch'
+```
+
+After that, you can add the column with the frozen weights to the huggingface dataset via
+
+```
+import os
+from data_preprocessing import DataPreprocessor
+from logger_setup import initialize_logger
+from datasets import load_from_disk
+from run_settings import get_settings 
+
+initialize_logger()
+
+tokenizer_name = "llama3"
+no_devices = n # the number of GPUs that were used to score the data  
+
+PATH_RAW_DATA = "/local/path/to/pg19"
+PATH_CHUNKED_DATA = os.path.join(PATH_RAW_DATA, f"preprocessed_{tokenizer_name}")
+PATH_FROZEN_CACHE = os.path.join(PATH_CHUNKED_DATA, f"precomputed_weights_3.0_8B")
+
+settings = get_settings(mode="llama3_32k_dense_precompute_weights")
+data_preprocessor = DataPreprocessor(settings=settings)
+
+data_preprocessor.frozen_collect_and_make_hf_dataset(precomputed_weights_path = PATH_FROZEN_CACHE,
+                                           folder_non_frozen = PATH_CHUNKED_DATA,
+                                           no_devices = no_devices)
+```
+
+### Loss variants
+The loss variants are determined by the config file. First, `use_frozen_base` indicates
+whether self-scoring (unfrozen) is used or not (frozen). The `base_length` determines the
+length of the short-context model. `base_stride` is the stride used for scoring the long document
+with the short-context model. The overlap between subsequences is `base_length - base_stride`. Increasing
+the stride makes the method more efficient (less forward passes) but more inexact. Usually, you want to use the
+smallest `base_stride` that leads to `chunk_size/base_length` additional forward passes. This value
+can be calculated via
+`(1-base_length/chunk_size)*base_length`, e.g. 6144 for 32768 context.
+
+The basic `logit_comparison` in the loss is $LongLoss - ShortLoss = -log(p^l) - (-log(p^s)) = log(\frac{p^s}{p^l})$
+The `transforms` are applied sequentially to it. Note that the minus transform leads to $log(\frac{p^l}{p^s})$.
+The `truncation` $\gamma$ clips the values over it. The sparsification parameter $\kappa$ only considers the top-$\kappa$ percent of the tokens.
+`interpolation` $\lambda$ applies a convex combination with the vanilla loss. ($\kappa=1$ or $\lambda=1$ lead to standard cross-entropy loss)
+`normalization` normalizes the weights such that they average to 1.
+
+### Loss Variants Table
+Losses investigated in the paper can be realised as follows:
+
+| Loss Variant                                                   | Transforms            | Interpolation | Normalization | Sparsification | Truncation | 
+|----------------------------------------------------------------|-----------------------|---------------|---------------|----------------|------------|
+| Dense $\lambda$                                                | [absolute]            | $\lambda$     | L1            | -              | -          |
+| Sparse $\kappa$                                                | [absolute]            | -             | L1            | $\kappa$       | -          | 
+| [LongCE](https://openreview.net/forum?id=fL4qWkSmtM)* $\gamma$ | [minus, exp]          | -             | -             | -              | $\gamma$   | 
+| PPMI s                                                         | [minus, shift s, max] | -             | L1            | $\kappa$       | -          | 
+| NPMI s                                                         | [shift s, max]        | -             | L1            | $\kappa$       | -          | 

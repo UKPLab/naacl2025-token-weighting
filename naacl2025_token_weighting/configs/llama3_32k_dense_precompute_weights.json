@@ -1,0 +1,41 @@
+{
+  "loss": {
+    "name": "precompute",
+    "params":
+    {
+      "base_length": 8192,
+      "base_stride": 6144,
+      "transforms": null,
+      "truncation": null,
+      "sparsification": null,
+      "normalization": null,
+      "interpolation": null
+    }
+  },
+  "logging": {
+    "log": null
+  },
+  "model": {
+    "model_path": "meta-llama/Meta-Llama-3-8B",
+    "scoring_model": "3.0_8B",
+    "rope_theta": 500000.0,
+    "chunk_size": 32768,
+    "stride": 32768,
+    "use_frozen_base": false
+  },
+  "data_preprocessing": {
+    "dataset": "pg19",
+    "no_train": null
+  },
+  "training_dynamics": {
+    "do_train": false,
+    "precompute_weights": true,
+    "batch_size": 1,
+    "precision_name": "bf16"
+  },
+  "deepspeed": {
+    "deepspeed_stage": null
+  },
+  "paths": {
+  }
+}

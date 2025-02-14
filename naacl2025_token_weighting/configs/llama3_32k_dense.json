@@ -1,0 +1,56 @@
+{
+  "loss": {
+    "name": "dense 0.75",
+    "params":
+    {
+      "base_length": 8192,
+      "base_stride": 6144,
+      "transforms": ["absolute"],
+      "truncation": null,
+      "sparsification": null,
+      "normalization": "L1",
+      "interpolation": 0.75
+    }
+  },
+  "logging": {
+    "log": "aim",
+    "logging_project_name": "Llama3",
+    "save_models": true,
+    "save_every": 30
+  },
+  "model": {
+    "model_path": "meta-llama/Meta-Llama-3-8B",
+    "rope_theta": 15300000.0,
+    "chunk_size": 32768,
+    "stride": 32768,
+    "use_frozen_base": false
+  },
+  "data_preprocessing": {
+    "dataset": "pg19",
+    "no_train": null
+  },
+  "training_dynamics": {
+    "do_train": true,
+    "lr": 2e-5,
+    "batch_size": 1,
+    "grad_acc": 16,
+    "scheduler": true,
+    "weight_decay": 0.01,
+    "adam_beta1":0.9,
+    "adam_beta2":0.95,
+    "adam_epsilon":1e-08,
+    "lr_scheduler_type": "constant_with_warmup",
+    "warmup_steps": 20,
+    "precision_name": "bf16",
+    "no_update_steps":240,
+    "gradient_checkpointing": true,
+    "seed": 42,
+    "grad_clip": 1.0
+  },
+  "deepspeed": {
+    "deepspeed_stage": 3,
+    "deepspeed_config_file": "deepspeed.json"
+  },
+  "paths": {
+  }
+}
