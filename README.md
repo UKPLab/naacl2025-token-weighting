@@ -9,7 +9,7 @@
 [![Python Versions](https://img.shields.io/badge/Python-3.10-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 
 This repository provides the code for our paper "Token Weighting for Long-Range Language Modeling", accepted to NAACL 2025 Findings.
-
+## Getting started
 To get started, clone the repo and run 
 
 ```
@@ -87,7 +87,7 @@ data_preprocessor.frozen_collect_and_make_hf_dataset(precomputed_weights_path = 
                                            no_devices = no_devices)
 ```
 
-### Loss variants
+## Loss variants
 The loss variants are determined by the config file. First, `use_frozen_base` indicates
 whether self-scoring (unfrozen) is used or not (frozen). The `base_length` determines the
 length of the short-context model. `base_stride` is the stride used for scoring the long document
@@ -103,7 +103,7 @@ The `truncation` $\gamma$ clips the values higher than itself. The sparsificatio
 `interpolation` $\lambda$ applies a convex combination with the vanilla loss. ($\kappa=1$ or $\lambda=1$ lead to standard cross-entropy loss)
 `normalization` normalizes the weights such that they average to 1.
 
-### Loss Variants Table
+## Loss Variants Table
 Losses investigated in the paper can be realised as follows:
 
 | Loss Variant                                                  | Transforms            | Interpolation | Normalization | Sparsification | Truncation | 
@@ -113,3 +113,21 @@ Losses investigated in the paper can be realised as follows:
 | [LongCE](https://openreview.net/forum?id=fL4qWkSmtM) $\gamma$ | [minus, exp]          | -             | -             | -              | $\gamma$   | 
 | PPMI s                                                        | [minus, shift s, max] | -             | L1            | $\kappa$       | -          | 
 | NPMI s                                                        | [shift s, max]        | -             | L1            | $\kappa$       | -          | 
+
+## Cite
+
+Please use the following citation:
+
+```
+@InProceedings{smith:20xx:CONFERENCE_TITLE,
+  author    = {Smith, John},
+  title     = {My Paper Title},
+  booktitle = {Proceedings of the 20XX Conference on XXXX},
+  month     = mmm,
+  year      = {20xx},
+  address   = {Gotham City, USA},
+  publisher = {Association for XXX},
+  pages     = {XXXX--XXXX},
+  url       = {http://xxxx.xxx}
+}
+```
