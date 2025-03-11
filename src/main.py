@@ -82,5 +82,5 @@ if __name__ == "__main__":
     print(bash_command)
     exit_code = create_subprocess(bash_command)
 
-    if exit_code == 0 and json.load(open(f"../configs/{run_name}.json"))["training_dynamics"]["precompute_weights"]:
+    if exit_code == 0 and json.load(open(f"../../configs/{run_name}.json"))["training_dynamics"]["precompute_weights"]:
         create_subprocess(f"python add_frozen_base_to_dataset.py --no_devices {torch.cuda.device_count()}")

@@ -61,8 +61,8 @@ with the short-context model. The overlap between subsequences is `base_length -
 the stride makes the method more efficient (less forward passes) but more inexact. Usually, you want to use the
 smallest `base_stride` that leads to `chunk_size/base_length` additional forward passes. This value
 can be calculated via `(1-base_length/chunk_size)*base_length`, e.g. 6144 for 32768 context.
-The basic `logit_comparison` in the loss is $`\text{LongLoss} - \text{ShortLoss} = -\log(p^l) - (-\log(p^s)) = \log\left(\frac{p^s}{p^l}\right)`$.
-The `transforms` are applied sequentially to it. Note that the `minus` transform leads to $`\log\left(\frac{p^l}{p^s}\right)`$.
+The basic `logit_comparison` in the loss is $\text{LongLoss} - \text{ShortLoss} = -\log(p^l) - (-\log(p^s)) = \log\left(\frac{p^s}{p^l}\right)$.
+The `transforms` are applied sequentially to it. Note that the `minus` transform leads to $\log\left(\frac{p^l}{p^s}\right)$.
 The `truncation` $\gamma$ clips the values higher than itself. The sparsification parameter $\kappa$ only considers the top-$\kappa$ percent of the tokens.
 `interpolation` $\lambda$ applies a convex combination with the vanilla loss. Note that $\kappa=1$ or $\lambda=1$ lead to standard cross-entropy loss.
 `normalization` normalizes the weights such that they average to 1.
