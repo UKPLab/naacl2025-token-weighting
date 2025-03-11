@@ -93,5 +93,6 @@ https://www.ukp.tu-darmstadt.de/
 UKP Lab is part of the TU Darmstadt: https://www.tu-darmstadt.de/
 
 ```
-This repository contains experimental software and is published for the sole purpose of giving additional background details on the respective publication.
+This repository contains experimental software and is published for the sole purpose of giving 
+additional background details on the respective publication.
 ```
