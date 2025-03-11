@@ -7,9 +7,13 @@
 [![Arxiv](https://img.shields.io/badge/Arxiv-2502.NNNNN-red?style=flat-square&logo=arxiv&logoColor=white)](https://put-here-your-paper.com)
 [![License](https://img.shields.io/github/license/UKPLab/naacl2025-token-weighting)](https://opensource.org/licenses/Apache-2.0)
 [![Python Versions](https://img.shields.io/badge/Python-3.10-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
-
+## Overview
 This repository provides the code for our paper "Token Weighting for Long-Range Language Modeling", accepted to NAACL 2025 Findings.
-## Getting started
+It contains code to preprocess [PG19](https://huggingface.co/datasets/deepmind/pg19) (i.e. split, tokenize, score and save documents) in `data_preprocessing.py`. `training.py` 
+implements a training loop with the settings from the `config` folder using a custom
+huggingface trainer. The novelty of `trainer.py` lies in the implementation of the flexible
+`ShortLongLoss`, which can model all the losses invstigated in our paper (see [Loss Variants Table](#loss-variants-table) below).
+## Getting Started
 To get started, clone the repo and run 
 
 ```
@@ -19,30 +23,24 @@ Additionally, make sure that `CUDA 11.7.` and `torch` are installed before insta
 ```
 pip install flash_attn==2.7.3
 ```
+## Preprocess Data
+> Note: all entrypoint scripts presented in the following contain
+> a --help flag for a detailed breakdown of their CLI arguments
 
-If you want to preprocess (i.e. chunk into 32k sequences and save in tokenized form) the data, run
+If you want to preprocess the data (i.e. chunk into 32k sequences and save in tokenized form), run
 
 ```
-import os
-from data_preprocessing import DataPreprocessor
-from logger_setup import initialize_logger
-from datasets import load_from_disk
+python preprocess_data.py
+```
 
-initialize_logger()
+### Calculate frozen base data
+For the frozen variant, the sequences first have to be scored and saved: 
 
-tokenizer_name = "llama3"
+```
+python main.py --run_name llama3_32k_dense_precompute_weights --launcher 'accelerate launch'
+```
 
-PATH_RAW_DATA = "/local/path/to/pg19"
-PATH_CHUNKED_DATA = os.path.join(PATH_RAW_DATA, f"preprocessed_{tokenizer_name}")
-
-data_preprocessor = DataPreprocessor(PATH_RAW_DATA=PATH_RAW_DATA, PATH_CHUNKED_DATA=PATH_CHUNKED_DATA,
-                                     tokenizer=tokenizer_name)
-dataset = data_preprocessor.fetch_data_from_file()
-
-data_preprocessor.save_locally_hf(dataset)
-``` 
-If `PATH_RAW_DATA` is empty or non-existent, it will be created and [PG19](https://huggingface.co/datasets/deepmind/pg19) will be downloaded into it.
-
+## Run Training
 If you want to log your training runs with [aim](https://aimstack.readthedocs.io/en/latest/overview.html), run 
 
 ```
@@ -55,38 +53,6 @@ Then you can start the self-scoring training (i.e. the unfrozen variant) via
 python main.py --out_path /directory/for/saved/runs
 ```
 
-For the frozen variant, the sequences first have to be scored and saved: 
-
-```
-python main.py --run_name llama3_32k_dense_precompute_weights --launcher 'accelerate launch'
-```
-
-After that, you can add the column with the frozen weights to the huggingface dataset via
-
-```
-import os
-from data_preprocessing import DataPreprocessor
-from logger_setup import initialize_logger
-from datasets import load_from_disk
-from run_settings import get_settings 
-
-initialize_logger()
-
-tokenizer_name = "llama3"
-no_devices = n # the number of GPUs that were used to score the data  
-
-PATH_RAW_DATA = "/local/path/to/pg19"
-PATH_CHUNKED_DATA = os.path.join(PATH_RAW_DATA, f"preprocessed_{tokenizer_name}")
-PATH_FROZEN_CACHE = os.path.join(PATH_CHUNKED_DATA, f"precomputed_weights_3.0_8B")
-
-settings = get_settings(mode="llama3_32k_dense_precompute_weights")
-data_preprocessor = DataPreprocessor(settings=settings)
-
-data_preprocessor.frozen_collect_and_make_hf_dataset(precomputed_weights_path = PATH_FROZEN_CACHE,
-                                           folder_non_frozen = PATH_CHUNKED_DATA,
-                                           no_devices = no_devices)
-```
-
 ## Loss variants
 The loss variants are determined by the config file. First, `use_frozen_base` indicates
 whether self-scoring (unfrozen) is used or not (frozen). The `base_length` determines the
@@ -95,12 +61,12 @@ with the short-context model. The overlap between subsequences is `base_length -
 the stride makes the method more efficient (less forward passes) but more inexact. Usually, you want to use the
 smallest `base_stride` that leads to `chunk_size/base_length` additional forward passes. This value
 can be calculated via
-`(1-base_length/chunk_size)*base_length`, e.g. 6144 for 32768 context.
+$(1-\text{base_length}/\text{chunk_size})\cdot \text{base_length}$, e.g. 6144 for 32768 context.
 
 The basic `logit_comparison` in the loss is $\text{LongLoss} - \text{ShortLoss} = -\log(p^l) - (-\log(p^s)) = \log\left(\frac{p^s}{p^l}\right)$
-The `transforms` are applied sequentially to it. Note that the minus transform leads to $log\left(\frac{p^l}{p^s}\right)$.
+The `transforms` are applied sequentially to it. Note that the `minus` transform leads to $log\left(\frac{p^l}{p^s}\right)$.
 The `truncation` $\gamma$ clips the values higher than itself. The sparsification parameter $\kappa$ only considers the top-$\kappa$ percent of the tokens.
-`interpolation` $\lambda$ applies a convex combination with the vanilla loss. ($\kappa=1$ or $\lambda=1$ lead to standard cross-entropy loss)
+`interpolation` $\lambda$ applies a convex combination with the vanilla loss. Note that $\kappa=1$ or $\lambda=1$ lead to standard cross-entropy loss.
 `normalization` normalizes the weights such that they average to 1.
 
 ## Loss Variants Table
@@ -114,20 +80,17 @@ Losses investigated in the paper can be realised as follows:
 | PPMI s                                                        | [minus, shift s, max] | -             | L1            | $\kappa$       | -          | 
 | NPMI s                                                        | [shift s, max]        | -             | L1            | $\kappa$       | -          | 
 
-## Cite
+## Contact
 
-Please use the following citation:
+Contact person:
+
+Falko Helm: [📧 Email](mailto:falko.helm@tu-darmstadt.de) | [💻 GitHub](https://github.com/falko1)
+
+If you have any questions, please do not hesitate to contact us or (preferably) open an issue here on GitHub.
+
+https://www.ukp.tu-darmstadt.de/   
+UKP Lab is part of the TU Darmstadt: https://www.tu-darmstadt.de/
 
 ```
-@InProceedings{smith:20xx:CONFERENCE_TITLE,
-  author    = {Smith, John},
-  title     = {My Paper Title},
-  booktitle = {Proceedings of the 20XX Conference on XXXX},
-  month     = mmm,
-  year      = {20xx},
-  address   = {Gotham City, USA},
-  publisher = {Association for XXX},
-  pages     = {XXXX--XXXX},
-  url       = {http://xxxx.xxx}
-}
+This repository contains experimental software and is published for the sole purpose of giving additional background details on the respective publication.
 ```

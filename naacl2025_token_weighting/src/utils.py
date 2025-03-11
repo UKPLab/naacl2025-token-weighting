@@ -77,3 +77,4 @@ def create_subprocess(subprocess_args):
     with Popen(subprocess_args, stdout=PIPE, bufsize=1, universal_newlines=True, shell=True) as p:
         for line in p.stdout:
             print(line, end='')  # process line here
+        return p.wait()  # Return the exit code of the process

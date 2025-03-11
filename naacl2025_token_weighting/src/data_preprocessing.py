@@ -204,8 +204,7 @@ class DataPreprocessor:
                 raise ValueError(
                     "tokenizer and PATH_RAW_DATA could not be inferred because no settings were given. Please set them explicitly.")
 
-        if not (os.path.exists(self.PATH_CHUNKED_DATA) and len(os.listdir(self.PATH_CHUNKED_DATA)) > 0):
-            os.makedirs(self.PATH_CHUNKED_DATA)
+        os.makedirs(self.PATH_CHUNKED_DATA, exist_ok=True)
 
         frozen_indicator = "frozen" if self.use_frozen_base else ""
         self.scoring_model = "3.0_8B" if scoring_model == "" else scoring_model
@@ -585,8 +584,7 @@ class DataPreprocessor:
                 datapoint = np.array(datapoint["input_ids"])
                 key = datapoint.tobytes()
                 yield {"input_ids": datapoint,
-                       "cross_entropy": all_data[key]["cross_entropy"],
-                       }
+                       "cross_entropy": all_data[key]["cross_entropy"]}
 
         train_data = Dataset.from_generator(frozen_gen,
                                             cache_dir="/pfss/mlde/workspaces/mlde_wsp_KIServiceCenter/helm/caches/dataset_creation")

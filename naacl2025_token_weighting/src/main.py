@@ -1,15 +1,18 @@
 import argparse
 import os
+import json
+import torch
 
 from datetime import datetime
 
 from utils import create_subprocess
 
-
-
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Script for running subprocess with configurable OUT_PATH.")
+    parser = argparse.ArgumentParser(
+        description="Script for running training.",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
     parser.add_argument(
         "--out_path",
         type=str,
@@ -26,7 +29,7 @@ if __name__ == "__main__":
         "--launcher",
         type=str,
         default="deepspeed",
-        help="Name of the launcher. Supported values are 'deepspeed' and 'python'"
+        help="Name of the launcher. Supported values are 'deepspeed' and 'python' and 'accelerate launch'"
     )
     parser.add_argument(
         "--resumed_run_path",
@@ -63,8 +66,6 @@ if __name__ == "__main__":
     execute_as = args.launcher
 
     run_name = args.run_name
-    
-    
 
     if resume_from_checkpoint:
         WORK_DIR = resumed_run_path
@@ -73,7 +74,13 @@ if __name__ == "__main__":
         timestamp = f'{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
         WORK_DIR = os.path.join(OUT_PATH, f"run_{timestamp}_{run_name}")
         print(f"Starting new training run based on {run_name}.json. Will be saved in {WORK_DIR}")
+        os.makedirs(WORK_DIR)
+
+
 
     bash_command = f"{execute_as} initiate_run.py --work_dir {WORK_DIR} --resume {resume_from_checkpoint} --checkpoint_no {checkpoint_no}"
     print(bash_command)
-    create_subprocess(bash_command)
+    exit_code = create_subprocess(bash_command)
+
+    if exit_code == 0 and json.load(open(f"../configs/{run_name}.json"))["training_dynamics"]["precompute_weights"]:
+        create_subprocess(f"python add_frozen_base_to_dataset.py --no_devices {torch.cuda.device_count()}")

@@ -85,7 +85,6 @@ class RunSettings:
             login(token=self.access_token)
         self.non_print_logger = non_print_logger
 
-
         self.model_path = model_path
         self.use_frozen_base = use_frozen_base
         self.rope_theta = rope_theta
@@ -152,8 +151,6 @@ class RunSettings:
         # data handling
         self.PATH_CHUNKED_DATA = f"../data/preprocessed_{self.tokenizer_name}" if PATH_CHUNKED_DATA is None else PATH_CHUNKED_DATA
         self.WORK_DIR = WORK_DIR
-        if WORK_DIR is not None and not os.path.exists(self.WORK_DIR):
-            os.makedirs(self.WORK_DIR)
 
 
 def get_settings(mode: str, resume: dict = None, workdir: str = None, time=None) -> RunSettings:
