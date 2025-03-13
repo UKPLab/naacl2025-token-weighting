@@ -92,6 +92,20 @@ If you have any questions, please do not hesitate to contact us or (preferably) 
 https://www.ukp.tu-darmstadt.de/   
 UKP Lab is part of the TU Darmstadt: https://www.tu-darmstadt.de/
 
+## Cite
+
+```
+@misc{helm2025tokenweightinglongrangelanguage,
+      title={Token Weighting for Long-Range Language Modeling}, 
+      author={Falko Helm and Nico Daheim and Iryna Gurevych},
+      year={2025},
+      eprint={2503.09202},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2503.09202}, 
+}
+```
+
 ```
 This repository contains experimental software and is published for the sole purpose of giving 
 additional background details on the respective publication.
