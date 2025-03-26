@@ -4,11 +4,11 @@
 </p>
 
 # Token Weighting for Long-Range Language Modeling
-[![Arxiv](https://img.shields.io/badge/Arxiv-2502.NNNNN-red?style=flat-square&logo=arxiv&logoColor=white)](https://put-here-your-paper.com)
+[![Arxiv](https://img.shields.io/badge/Arxiv-2502.NNNNN-red?style=flat-square&logo=arxiv&logoColor=white)](https://arxiv.org/abs/2503.09202)
 [![License](https://img.shields.io/github/license/UKPLab/naacl2025-token-weighting)](https://opensource.org/licenses/Apache-2.0)
 [![Python Versions](https://img.shields.io/badge/Python-3.10-blue.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 ## Overview
-This repository provides the code for our paper "Token Weighting for Long-Range Language Modeling", accepted to NAACL 2025 Findings.
+This repository provides the code for our paper ["Token Weighting for Long-Range Language Modeling"](https://arxiv.org/abs/2503.09202), accepted to NAACL 2025 Findings.
 It contains code to preprocess [PG19](https://huggingface.co/datasets/deepmind/pg19) (i.e. split, tokenize, score and save documents) in `data_preprocessing.py`. `training.py` 
 implements a training loop with the settings from the `config` folder using a custom
 huggingface trainer. The novelty of `trainer.py` lies in the implementation of the flexible
